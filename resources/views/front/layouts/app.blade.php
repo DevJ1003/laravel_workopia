@@ -2,7 +2,7 @@
 <html class="no-js" lang="en_AU" />
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title>CareerVibe | Find Best Jobs</title>
+	<title>Workopia | Find Best Jobs</title>
 	<meta name="description" content="" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1, user-scalable=no" />
 	<meta name="HandheldFriendly" content="True" />
@@ -16,7 +16,7 @@
 <header>
 	<nav class="navbar navbar-expand-lg navbar-light bg-white shadow py-3">
 		<div class="container">
-			<a class="navbar-brand" href="index.html">CareerVibe</a>
+			<a class="navbar-brand" href="{{ route('home') }}">Workopia</a>
 			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 				<span class="navbar-toggler-icon"></span>
 			</button>
@@ -29,7 +29,13 @@
 						<a class="nav-link" aria-current="page" href="jobs.html">Find Jobs</a>
 					</li>										
 				</ul>				
-				<a class="btn btn-outline-primary me-2" href="{{ route('account.login') }}" type="submit">Login</a>
+
+        @if (!Auth::check())
+          <a class="btn btn-outline-primary me-2" href="{{ route('account.login') }}" type="submit">Login</a>   
+        @else
+          <a class="btn btn-outline-primary me-2" href="{{ route('account.profile') }}" type="submit">Account</a>  
+        @endif
+
 				<a class="btn btn-primary" href="post-job.html" type="submit">Post a Job</a>
 			</div>
 		</div>
