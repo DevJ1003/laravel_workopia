@@ -21,9 +21,10 @@
             <div class="col-lg-9">
                 <div class="card border-0 shadow mb-4">
 
-                    @if (session('success'))
+                    {{-- @if (session('success'))
                         <div class="alert alert-success">{{ session('success') }}</div>
-                    @endif
+                    @endif --}}
+                    @include('front.message')
 
                     <form method="POST" action="{{ route('account.updateProfile') }}">
                         @csrf
@@ -37,7 +38,7 @@
                             </div>
                             <div class="mb-4">
                                 <label for="" class="mb-2">Email*</label>
-                                <input type="text" name="email" id="email" value="{{ $user->email }}" placeholder="Enter Email" class="form-control">
+                                <input type="text" name="email" id="email" value="{{ $user->email }}" placeholder="Enter Email" class="form-control" disabled>
                             </div>
                             <div class="mb-4">
                                 <label for="" class="mb-2">Designation*</label>

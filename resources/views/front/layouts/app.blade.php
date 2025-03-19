@@ -53,17 +53,21 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <form>
+
+              <form method="POST" action="{{ route('account.updateProfilePic') }}" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+
                   <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Profile Image</label>
-                      <input type="file" class="form-control" id="image"  name="image">
+                      <input type="file" class="form-control" id="image" name="image">
                   </div>
                   <div class="d-flex justify-content-end">
                       <button type="submit" class="btn btn-primary mx-3">Update</button>
                       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                   </div>
-                  
               </form>
+
             </div>
           </div>
         </div>
