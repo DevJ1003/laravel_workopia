@@ -127,11 +127,6 @@ class AuthController extends Controller
         return redirect()->route('account.profile')->with('success', 'Profile pic updated successfully!');
     }
 
-    public function indexJob()
-    {
-        return view('front.account.job.index');
-    }
-
     public function createJob(Request $request)
     {
         $categories = Category::orderBy('name', 'ASC')->get();
@@ -144,6 +139,79 @@ class AuthController extends Controller
     }
 
     public function saveJob(Request $request)
+    {
+
+        $request->validate([
+            // 'user_id' => 'required',
+            'title' => 'required|string|max:255',
+            'category_id' => 'required',
+            'job_nature_id' => 'required',
+            'vacancy' => 'required|integer|min:1',
+            'salary' => 'nullable|string|max:255',
+            'location' => 'required|string|max:255',
+            'description' => 'required|string',
+            'benefits' => 'nullable|string',
+            'responsibility' => 'nullable|string',
+            'qualifications' => 'nullable|string',
+            'experience' => 'nullable|string|max:255',
+            'keywords' => 'nullable|string|max:255',
+            'company_name' => 'required|string|max:255',
+            'company_location' => 'nullable|string|max:255',
+            'website' => 'nullable|string|max:255|url',
+        ]);
+
+        Job::create([
+            'user_id' => Auth::user()->id,
+            'title' => $request->title,
+            'category_id' => $request->category_id,
+            'job_nature_id' => $request->job_nature_id,
+            'vacancy' => $request->vacancy,
+            'salary' => $request->salary,
+            'location' => $request->location,
+            'description' => $request->description,
+            'benefits' => $request->benefits,
+            'responsibility' => $request->responsibility,
+            'qualifications' => $request->qualifications,
+            'experience' => $request->experience,
+            'keywords' => $request->keywords,
+            'company_name' => $request->company_name,
+            'company_location' => $request->company_location,
+            'website' => $request->website,
+        ]);
+
+        return redirect()->route('account.indexJob')->with('success', 'Job created successfully!');
+    }
+
+    public function indexJob()
+    {
+        $jobs = Job::where('user_id', Auth::user()->id)->with('jobNature')->orderBy('created_at', 'DESC')->paginate(10);
+        return view('front.account.job.index', [
+            'jobs' => $jobs
+        ]);
+    }
+
+    public function editJob(Request $request, $id)
+    {
+        $categories = Category::orderBy('name', 'ASC')->get();
+        $job_natures = JobNature::orderBy('name', 'ASC')->get();
+
+        $job = Job::where([
+            'user_id' => Auth::user()->id,
+            'id' => $id,
+        ])->first();
+
+        if ($job == null) {
+            abort(404);
+        }
+
+        return view('front.account.job.edit', [
+            'categories' => $categories,
+            'job_natures' => $job_natures,
+            'job' => $job
+        ]);
+    }
+
+    public function updateJob(Request $request, $id)
     {
 
         $request->validate([
@@ -164,25 +232,45 @@ class AuthController extends Controller
             'website' => 'nullable|string|max:255|url',
         ]);
 
-        Job::create([
-            'title' => $request->title,
-            'category_id' => $request->category_id,
-            'job_nature_id' => $request->job_nature_id,
-            'vacancy' => $request->vacancy,
-            'salary' => $request->salary,
-            'location' => $request->location,
-            'description' => $request->description,
-            'benefits' => $request->benefits,
-            'responsibility' => $request->responsibility,
-            'qualifications' => $request->qualifications,
-            'experience' => $request->experience,
-            'keywords' => $request->keywords,
-            'company_name' => $request->company_name,
-            'company_location' => $request->company_location,
-            'website' => $request->website,
-        ]);
+        $job = Job::find($id);
+        if (!$job) {
+            return redirect()->route('account.indexJob')->with('error', 'Job not found.');
+        }
 
-        return redirect()->route('account.indexJob')->with('success', 'Job created successfully!');
+        $job->title = $request->title;
+        $job->category_id = $request->category_id;
+        $job->job_nature_id = $request->job_nature_id;
+        $job->vacancy = $request->vacancy;
+        $job->salary = $request->salary;
+        $job->location = $request->location;
+        $job->description = $request->description;
+        $job->benefits = $request->benefits;
+        $job->responsibility = $request->responsibility;
+        $job->qualifications = $request->qualifications;
+        $job->experience = $request->experience;
+        $job->keywords = $request->keywords;
+        $job->company_name = $request->company_name;
+        $job->company_location = $request->company_location;
+        $job->website = $request->website;
+        $job->save();
+
+        return redirect()->route('account.editJob', ['jobId' => $id])->with('success', 'Job updated successfully!');
+    }
+
+    public function deleteJob($id)
+    {
+
+        $job = Job::where([
+            'user_id' => Auth::user()->id,
+            'id' => $id,
+        ])->first();
+
+        if (!$job) {
+            return redirect()->route('account.indexJob')->with('error', 'Job not found!');
+        }
+
+        $job->delete();
+        return redirect()->route('account.indexJob')->with('success', 'Job deleted successfully!');
     }
 
     public function logout(Request $request)

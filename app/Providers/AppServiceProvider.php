@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\RedirectTo;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,5 +31,8 @@ class AppServiceProvider extends ServiceProvider
         Route::get('/login', function () {
             return redirect()->route('account.login');
         })->name('login');
+
+        // used to define bootstrap version
+        Paginator::useBootstrapFive();
     }
 }

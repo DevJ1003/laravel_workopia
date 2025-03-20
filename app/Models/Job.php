@@ -10,6 +10,7 @@ class Job extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'title',
         'category_id',
         'job_nature_id',
@@ -26,4 +27,14 @@ class Job extends Model
         'company_location',
         'website'
     ];
+
+    public function jobNature()
+    {
+        return $this->belongsTo(JobNature::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }

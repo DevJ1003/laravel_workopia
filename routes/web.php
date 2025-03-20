@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\JobsController;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
@@ -9,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 // });
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/jobs', [JobsController::class, 'index'])->name('jobs');
 
 Route::group(['prefix' => 'account'], function () {
 
@@ -29,6 +31,9 @@ Route::group(['prefix' => 'account'], function () {
         Route::get('/create-job', [AuthController::class, 'createJob'])->name('account.createJob');
         Route::post('/save-job', [AuthController::class, 'saveJob'])->name('account.saveJob');
         Route::get('/index-job', [AuthController::class, 'indexJob'])->name('account.indexJob');
+        Route::get('/index-job/edit/{jobId}', [AuthController::class, 'editJob'])->name('account.editJob');
+        Route::put('/index-job/update-job/{jobId}', [AuthController::class, 'updateJob'])->name('account.updateJob');
+        Route::delete('/index-job/delete-job/{jobId}', [AuthController::class, 'deleteJob'])->name('account.deleteJob');
         Route::get('/logout', [AuthController::class, 'logout'])->name('account.logout');
     });
 });
