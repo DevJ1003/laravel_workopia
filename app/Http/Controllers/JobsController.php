@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Job;
+use App\Models\JobApplication;
 use App\Models\JobNature;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class JobsController extends Controller
@@ -62,5 +64,55 @@ class JobsController extends Controller
             'jobs' => $jobs,
             'jobNatureArray' => $jobNatureArray
         ]);
+    }
+
+    public function detail($id)
+    {
+        $job = Job::where([
+            'id' => $id,
+            'status' => 1
+        ])->with(['jobNature', 'category'])->first();
+
+        if ($job == null) {
+            abort(404);
+        }
+
+        // dd($job);
+
+        return view('front.jobDetail', [
+            'job' => $job,
+        ]);
+    }
+
+    public function applyJob(Request $request, $id)
+    {
+
+        $id = $request->id;
+        $job = Job::where('id', $id)->first();
+
+        // If job not found in db
+        if ($job == null) {
+            return redirect('jobs')->with('error', 'Job does not exist!');
+        }
+
+        // you can't apply to own job
+        $employer_id = $job->user_id;
+        if ($employer_id == Auth::user()->id) {
+            return redirect('jobs')->with('error', "You can't apply to your own job!");
+        }
+
+        // to check if user already applied for a job
+        if (JobApplication::where('user_id', Auth::user()->id)->where('job_id', $id)->exists()) {
+            return redirect()->back()->with('error', 'You have already applied to this job.');
+        }
+
+        $application = new JobApplication();
+        $application->job_id = $id;
+        $application->user_id = Auth::user()->id;
+        $application->employer_id = $employer_id;
+        $application->applied_date = now();
+        $application->save();
+
+        return redirect('jobs')->with('success', 'You have successfully applied!');
     }
 }

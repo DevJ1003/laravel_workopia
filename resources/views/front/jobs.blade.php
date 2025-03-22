@@ -5,6 +5,7 @@
 <section class="section-3 py-5 bg-2 ">
     <div class="container">     
         <div class="row">
+            @include('front.message')
             <div class="col-6 col-md-10 ">
                 <h2>Find Jobs</h2>  
             </div>
@@ -100,9 +101,9 @@
                                                 <span class="fw-bolder"><i class="fa fa-clock-o"></i></span>
                                                 <span class="ps-1">{{ $job->jobNature->name }}</span>
                                             </p>
-                                            <p>Keywords: {{ $job->keywords }}</p>
+                                            {{-- <p>Keywords: {{ $job->keywords }}</p>
                                             <p>Category: {{ $job->category->name }}</p>
-                                            <p>Experience: {{ $job->experience }}</p>
+                                            <p>Experience: {{ $job->experience }}</p> --}}
                                             @if (!is_null($job->salary))
                                             <p class="mb-0">
                                                 <span class="fw-bolder"><i class="fa fa-inr"></i></span>
@@ -116,7 +117,7 @@
                                             @endif
                                         </div>
                                         <div class="d-grid mt-3">
-                                            <a href="job-detail.html" class="btn btn-primary btn-lg">Details</a>
+                                            <a href="{{ route('jobDetail', ['id' => $job->id]) }}" class="btn btn-primary btn-lg">Details</a>
                                         </div>
                                     </div>
                                 </div>
