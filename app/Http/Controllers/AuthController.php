@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Job;
+use App\Models\JobApplication;
 use App\Models\JobNature;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -271,6 +272,30 @@ class AuthController extends Controller
 
         $job->delete();
         return redirect()->route('account.indexJob')->with('success', 'Job deleted successfully!');
+    }
+
+    public function myJobApplications()
+    {
+        $jobApplications = JobApplication::where('user_id', Auth::user()->id)->with(['job', 'job.JobNature', 'job.applications'])->paginate(10);
+        return view('front.account.job.my-job-applications', [
+            'jobApplications' => $jobApplications
+        ]);
+    }
+
+    public function removeAppliedJob($id)
+    {
+
+        $job = JobApplication::where([
+            'user_id' => Auth::user()->id,
+            'id' => $id,
+        ])->first();
+
+        if (!$job) {
+            return redirect()->route('account.myJobApplications')->with('error', 'Job not found!');
+        }
+
+        $job->delete();
+        return redirect()->route('account.myJobApplications')->with('success', 'Job removed successfully!');
     }
 
     public function logout(Request $request)
