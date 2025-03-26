@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Job;
 use App\Models\JobApplication;
 use App\Models\JobNature;
+use App\Models\SavedJob;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -126,5 +127,30 @@ class JobsController extends Controller
         Mail::to($employer->email)->send(new JobNotificationEmail($mailData));
 
         return redirect('jobs')->with('success', 'You have successfully applied!');
+    }
+
+    public function saveJob(Request $request, $id)
+    {
+
+        $id = $request->id;
+        $job = Job::where('id', $id)->first();
+
+        // If job not found in db
+        if ($job == null) {
+            return redirect('jobs')->with('error', 'Job does not exist!');
+        }
+
+        // to check if user already applied for a job
+        if (SavedJob::where('user_id', Auth::user()->id)->where('job_id', $id)->exists()) {
+            return redirect()->back()->with('error', 'You have already saved this job.');
+        }
+
+        $save = new SavedJob();
+        $save->job_id = $id;
+        $save->user_id = Auth::user()->id;
+        $save->created_at = now();
+        $save->save();
+
+        return redirect('jobs')->with('success', 'Job saved successfully!');
     }
 }

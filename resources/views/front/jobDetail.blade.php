@@ -73,7 +73,6 @@
                         </div>
                         <div class="border-bottom"></div>
                         <div class="pt-3 text-end">
-                            <a href="#" class="btn btn-primary">Save</a>
                             {{-- @if (Auth::check())
                                 <form id="applyForm" action="{{ route('jobApply', ['id' => $job->id]) }}" method="POST" style="display: none;">
                                     @csrf
@@ -83,23 +82,34 @@
                                 <a href="javascript:void(0);" class="btn btn-primary disabled">Login to Apply</a>
                             @endif --}}
                             @if (Auth::check())
-                                @php
-                                    $hasApplied = \App\Models\JobApplication::where('user_id', Auth::id())->where('job_id', $job->id)->exists();
-                                @endphp
-
-                                @if ($hasApplied)
-                                    <a class="btn btn-secondary" disabled>
-                                        <i class="fa fa-check"></i> Applied
-                                    </a>
-                                @else
-                                    <form id="applyForm" action="{{ route('jobApply', ['id' => $job->id]) }}" method="POST" style="display: none;">
-                                        @csrf
-                                    </form>
-                                    <a href="#" onclick="confirmApply(event)" class="btn btn-primary">Apply</a>
-                                @endif
+                            @php
+                                $userId = Auth::id();
+                                $hasApplied = \App\Models\JobApplication::where('user_id', $userId)->where('job_id', $job->id)->exists();
+                                $hasSaved = \App\Models\SavedJob::where('user_id', $userId)->where('job_id', $job->id)->exists();
+                            @endphp
+                        
+                            @if ($hasApplied && $hasSaved)
+                                <a class="btn btn-primary" disabled>
+                                    <i class="fa fa-check"></i> Saved
+                                </a>
+                                <a class="btn btn-primary" disabled>
+                                    <i class="fa fa-check"></i> Applied
+                                </a>
                             @else
-                                <a href="{{ route('login') }}" class="btn btn-primary">Login to Apply</a>
+                                <form id="saveForm" action="{{ route('jobSave', ['id' => $job->id]) }}" method="POST" style="display: none;">
+                                    @csrf
+                                </form>
+                                <a href="#" onclick="confirmSave(event)" class="btn btn-primary">Save</a>
+                        
+                                <form id="applyForm" action="{{ route('jobApply', ['id' => $job->id]) }}" method="POST" style="display: none;">
+                                    @csrf
+                                </form>
+                                <a href="#" onclick="confirmApply(event)" class="btn btn-primary">Apply</a>
                             @endif
+                        @else
+                            <a href="{{ route('login') }}" class="btn btn-primary">Login to Save</a>
+                            <a href="{{ route('login') }}" class="btn btn-primary">Login to Apply</a>
+                        @endif                        
                         </div>
                     </div>
                 </div>
@@ -154,6 +164,13 @@
         event.preventDefault();
         if (confirm('Are you sure you want to apply for this job?')) {
             document.getElementById('applyForm').submit();
+        }
+    }
+
+    function confirmSave(event) {
+        event.preventDefault();
+        if (confirm('Are you sure you want to save this job?')) {
+            document.getElementById('saveForm').submit();
         }
     }
 </script>

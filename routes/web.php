@@ -13,6 +13,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/jobs', [JobsController::class, 'index'])->name('jobs');
 Route::get('/jobs/detail/{id}', [JobsController::class, 'detail'])->name('jobDetail');
 Route::post('/jobs/apply/{id}', [JobsController::class, 'applyJob'])->name('jobApply');
+Route::post('/jobs/save/{id}', [JobsController::class, 'saveJob'])->name('jobSave');
 
 Route::group(['prefix' => 'account'], function () {
 
