@@ -4,7 +4,6 @@
 
 <section class="section-4 bg-2">    
     <div class="container pt-5">
-        @include('front.message')
         <div class="row">
             <div class="col">
                 <nav aria-label="breadcrumb" class=" rounded-3 p-3">
@@ -18,6 +17,7 @@
     <div class="container job_details_area">
         <div class="row pb-5">
             <div class="col-md-8">
+                @include('front.message')
                 <div class="card shadow border-0">
                     <div class="job_details_header">
                         <div class="single_jobs white-bg d-flex justify-content-between">
@@ -84,35 +84,148 @@
                             @if (Auth::check())
                             @php
                                 $userId = Auth::id();
-                                $hasApplied = \App\Models\JobApplication::where('user_id', $userId)->where('job_id', $job->id)->exists();
                                 $hasSaved = \App\Models\SavedJob::where('user_id', $userId)->where('job_id', $job->id)->exists();
                             @endphp
-                        
-                            @if ($hasApplied && $hasSaved)
-                                <a class="btn btn-primary" disabled>
-                                    <i class="fa fa-check"></i> Saved
-                                </a>
-                                <a class="btn btn-primary" disabled>
-                                    <i class="fa fa-check"></i> Applied
-                                </a>
+                            
+                                @if ($hasSaved)
+                                    <a class="btn btn-primary" disabled>
+                                        <i class="fa fa-check"></i> Saved
+                                    </a>
+                                @else
+                                    <form id="saveForm" action="{{ route('jobSave', ['id' => $job->id]) }}" method="POST" style="display: none;">
+                                        @csrf
+                                    </form>
+                                    <a href="#" onclick="confirmSave(event)" class="btn btn-primary">Save</a>
+                                @endif
                             @else
-                                <form id="saveForm" action="{{ route('jobSave', ['id' => $job->id]) }}" method="POST" style="display: none;">
-                                    @csrf
-                                </form>
-                                <a href="#" onclick="confirmSave(event)" class="btn btn-primary">Save</a>
+                                <a href="{{ route('login') }}" class="btn btn-primary">Login to Save</a>
+                            @endif  
+                        {{-- // --}}
+                            @if (Auth::check())
+                            @php
+                                $userId = Auth::id();
+                                $hasApplied = \App\Models\JobApplication::where('user_id', $userId)->where('job_id', $job->id)->exists();
+                            @endphp
+                            
+                                @if ($hasApplied)
+                                    <a class="btn btn-primary" disabled>
+                                        <i class="fa fa-check"></i> Applied
+                                    </a>
+                                @else
+                            
+                                    <form id="applyForm" action="{{ route('jobApply', ['id' => $job->id]) }}" method="POST" style="display: none;">
+                                        @csrf
+                                    </form>
+                                    <a href="#" onclick="confirmApply(event)" class="btn btn-primary">Apply</a>
+                                @endif
+                            @else
+                                <a href="{{ route('login') }}" class="btn btn-primary">Login to Apply</a>
+                            @endif                        
+                        </div>
+                    </div>
+                </div>
+
+
+                {{--  --}}
+                @if (Auth::user())
+                    @if (Auth::user()->id == $job->user_id)
                         
+                    
+                    
+                
+                <div class="card shadow border-0 mt-4">
+                    <div class="job_details_header">
+                        <div class="single_jobs white-bg d-flex justify-content-between">
+                            <div class="jobs_left d-flex align-items-center">
+                                
+                                <div class="jobs_conetent">
+                                        <h4>Applicants</h4>
+                                </div>
+                            </div>
+                            {{-- <div class="jobs_right">
+                            </div> --}}
+                        </div>
+                    </div>
+                    <div class="descript_wrap white-bg">
+                        <table class="table table-striped">
+                            <tr>
+                                <td>Name</td>
+                                <td>Email</td>
+                                <td>Mobile</td>
+                                <td>Applied Date</td>
+                            </tr>
+                            <tr>
+                                @if ($applications->isNotEmpty())
+                                    @foreach ($applications as $application)
+                                        <td>{{ $application->user->name }}</td>
+                                        <td>{{ $application->user->email }}</td>
+                                        <td>{{ $application->user->phone }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($application->applied_date)->format('d M, Y') }}</td>
+                                    @endforeach
+                                    @else
+                                    <tr>
+                                        <td colspan="4">Applicants not found!</td>
+                                    </tr>
+                                @endif
+                            </tr>
+                        </table>
+                        <div class="border-bottom">
+                        </div>
+                        <div class="pt-3 text-end">
+                            {{-- @if (Auth::check())
                                 <form id="applyForm" action="{{ route('jobApply', ['id' => $job->id]) }}" method="POST" style="display: none;">
                                     @csrf
                                 </form>
                                 <a href="#" onclick="confirmApply(event)" class="btn btn-primary">Apply</a>
-                            @endif
-                        @else
-                            <a href="{{ route('login') }}" class="btn btn-primary">Login to Save</a>
-                            <a href="{{ route('login') }}" class="btn btn-primary">Login to Apply</a>
-                        @endif                        
+                            @else
+                                <a href="javascript:void(0);" class="btn btn-primary disabled">Login to Apply</a>
+                            @endif --}}
+                            {{-- @if (Auth::check())
+                            @php
+                                $userId = Auth::id();
+                                $hasSaved = \App\Models\SavedJob::where('user_id', $userId)->where('job_id', $job->id)->exists();
+                            @endphp
+                            
+                                @if ($hasSaved)
+                                    <a class="btn btn-primary" disabled>
+                                        <i class="fa fa-check"></i> Saved
+                                    </a>
+                                @else
+                                    <form id="saveForm" action="{{ route('jobSave', ['id' => $job->id]) }}" method="POST" style="display: none;">
+                                        @csrf
+                                    </form>
+                                    <a href="#" onclick="confirmSave(event)" class="btn btn-primary">Save</a>
+                                @endif
+                            @else
+                                <a href="{{ route('login') }}" class="btn btn-primary">Login to Save</a>
+                            @endif   --}}
+                        {{-- // --}}
+                            {{-- @if (Auth::check())
+                            @php
+                                $userId = Auth::id();
+                                $hasApplied = \App\Models\JobApplication::where('user_id', $userId)->where('job_id', $job->id)->exists();
+                            @endphp
+                            
+                                @if ($hasApplied)
+                                    <a class="btn btn-primary" disabled>
+                                        <i class="fa fa-check"></i> Applied
+                                    </a>
+                                @else
+                            
+                                    <form id="applyForm" action="{{ route('jobApply', ['id' => $job->id]) }}" method="POST" style="display: none;">
+                                        @csrf
+                                    </form>
+                                    <a href="#" onclick="confirmApply(event)" class="btn btn-primary">Apply</a>
+                                @endif
+                            @else
+                                <a href="{{ route('login') }}" class="btn btn-primary">Login to Apply</a>
+                            @endif                         --}}
                         </div>
                     </div>
                 </div>
+                @endif
+                @endif
+                {{--  --}}
             </div>
             <div class="col-md-4">
                 <div class="card shadow border-0">
@@ -164,6 +277,11 @@
         event.preventDefault();
         if (confirm('Are you sure you want to apply for this job?')) {
             document.getElementById('applyForm').submit();
+
+            setTimeout(() => {
+            location.reload(); // Reload the page after saving
+        }, 1000);
+
         }
     }
 
@@ -171,6 +289,11 @@
         event.preventDefault();
         if (confirm('Are you sure you want to save this job?')) {
             document.getElementById('saveForm').submit();
+
+            setTimeout(() => {
+            location.reload(); // Reload the page after saving
+        }, 1000);
+
         }
     }
 </script>

@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Job;
 use App\Models\JobApplication;
 use App\Models\JobNature;
+use App\Models\SavedJob;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -276,13 +277,17 @@ class AuthController extends Controller
 
     public function myJobApplications()
     {
-        $jobApplications = JobApplication::where('user_id', Auth::user()->id)->with(['job', 'job.JobNature', 'job.applications'])->paginate(10);
+        $jobApplications = JobApplication::where('user_id', Auth::user()->id)
+            ->with(['job', 'job.JobNature', 'job.applications'])
+            ->orderBy('created_at', 'DESC')
+            ->paginate(10);
+
         return view('front.account.job.my-job-applications', [
             'jobApplications' => $jobApplications
         ]);
     }
 
-    public function removeAppliedJob($id)
+    public function removeAppliedJob(Request $request, $id)
     {
 
         $job = JobApplication::where([
@@ -296,6 +301,67 @@ class AuthController extends Controller
 
         $job->delete();
         return redirect()->route('account.myJobApplications')->with('success', 'Job removed successfully!');
+    }
+
+    public function savedJobs()
+    {
+        $savedJobs = SavedJob::where([
+            'user_id' => Auth::user()->id
+        ])->with(['job', 'job.JobNature', 'job.applications'])
+            ->orderBy('created_at', 'DESC')
+            ->paginate(10);
+
+        return view('front.account.job.saved-jobs', [
+            'savedJobs' => $savedJobs
+        ]);
+    }
+
+    public function removeSavedJob(Request $request, $id)
+    {
+        $job = SavedJob::where([
+            'user_id' => Auth::user()->id,
+            'id' => $id,
+        ])->first();
+
+        if (!$job) {
+            return redirect()->route('account.savedJobs')->with('error', 'Job not found!');
+        }
+
+        $job->delete();
+        return redirect()->route('account.savedJobs')->with('success', 'Job unsaved!');
+    }
+
+    public function changePassword(Request $request)
+    {
+
+        $request->validate([
+            'old_password' => 'required',
+            'new_password' => 'required|min:5',
+            // 'confirm_password' => 'required|same:new_password',
+            'confirm_password' => 'required',
+        ]);
+
+        // $user = Auth::user();
+        $user = User::find(Auth::id());
+        if (!$user) {
+            return redirect()->route('account.profile')->with('error', 'User not found.');
+        }
+
+        // Check if old password matches
+        if (!Hash::check($request->old_password, $user->password)) {
+            return redirect()->route('account.profile')->with('error', 'Old password is incorrect!');
+        }
+
+        // Check if new password matches with confirm password
+        if ($request->new_password !== $request->confirm_password) {
+            return redirect()->route('account.profile')->with('error', 'New password & confirm password did not match!');
+        }
+
+        // Updating new password
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return redirect()->route('account.profile')->with('success', 'Password changed successfully!');
     }
 
     public function logout(Request $request)

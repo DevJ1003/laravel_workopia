@@ -56,28 +56,61 @@
                 </div>
 
                 <div class="card border-0 shadow mb-4">
-                    <div class="card-body p-4">
-                        <h3 class="fs-4 mb-1">Change Password</h3>
-                        <div class="mb-4">
-                            <label for="" class="mb-2">Old Password*</label>
-                            <input type="password" placeholder="Old Password" class="form-control">
+                    <form action="{{ route('account.changePassword') }}" method="POST" id="changePasswordForm" name="changePasswordForm">
+                        @csrf
+                        @method('PUT')
+                        <div class="card-body p-4">
+                            <h3 class="fs-4 mb-1">Change Password</h3>
+                            <div class="mb-4">
+                                <label for="" class="mb-2">Old Password*</label>
+                                <input type="password" id="old_password" name="old_password" placeholder="Old Password" class="form-control">
+                            </div>
+                            <div class="mb-4">
+                                <label for="" class="mb-2">New Password*</label>
+                                <input type="password" id="new_password" name="new_password" placeholder="New Password" class="form-control">
+                            </div>
+                            <div class="mb-4">
+                                <label for="" class="mb-2">Confirm Password*</label>
+                                <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" class="form-control">
+                            </div>                        
                         </div>
-                        <div class="mb-4">
-                            <label for="" class="mb-2">New Password*</label>
-                            <input type="password" placeholder="New Password" class="form-control">
+                        <div class="card-footer  p-4">
+                            <button type="submit" class="btn btn-primary">Update</button>
                         </div>
-                        <div class="mb-4">
-                            <label for="" class="mb-2">Confirm Password*</label>
-                            <input type="password" placeholder="Confirm Password" class="form-control">
-                        </div>                        
-                    </div>
-                    <div class="card-footer  p-4">
-                        <button type="button" class="btn btn-primary">Update</button>
-                    </div>
+                    </form>
                 </div>                
             </div>
         </div>
     </div>
 </section>
+
+@endsection
+
+@section('customJs')
+<script>
+    document.getElementById("changePasswordForm").addEventListener("submit", function(event) {
+        let oldPassword = document.getElementById("old_password").value.trim();
+        let newPassword = document.getElementById("new_password").value.trim();
+        let confirmPassword = document.getElementById("confirm_password").value.trim();
+
+        if (!oldPassword || !newPassword || !confirmPassword) {
+            alert("Please fill in all the fields.");
+            event.preventDefault();
+            return;
+        }
+
+        if (newPassword.length < 5) {
+            alert("New password must be at least 5 characters long.");
+            event.preventDefault();
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            alert("New password and confirm password do not match.");
+            event.preventDefault();
+            return;
+        }
+    });
+</script>
 
 @endsection

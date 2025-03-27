@@ -10020,3 +10020,7 @@ footer .nav-link {
   content: '';
 }
 /* '' */
+
+.trumbowyg-editor ul li {
+  list-style: disc;
+}

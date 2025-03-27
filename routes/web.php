@@ -38,7 +38,10 @@ Route::group(['prefix' => 'account'], function () {
         Route::put('/index-job/update-job/{jobId}', [AuthController::class, 'updateJob'])->name('account.updateJob');
         Route::delete('/index-job/delete-job/{jobId}', [AuthController::class, 'deleteJob'])->name('account.deleteJob');
         Route::get('/my-job-applications', [AuthController::class, 'myJobApplications'])->name('account.myJobApplications');
-        Route::delete('/my-job-applications/remove-applied-job/{Id}', [AuthController::class, 'removeAppliedJob'])->name('account.removeAppliedJob');
+        Route::delete('/my-job-applications/remove-applied-job/{id}', [AuthController::class, 'removeAppliedJob'])->name('account.removeAppliedJob');
+        Route::get('/saved-jobs', [AuthController::class, 'savedJobs'])->name('account.savedJobs');
+        Route::delete('/my-job-applications/remove-saved-job/{id}', [AuthController::class, 'removeSavedJob'])->name('account.removeSavedJob');
+        Route::put('/account/change-password', [AuthController::class, 'changePassword'])->name('account.changePassword');
         Route::get('/logout', [AuthController::class, 'logout'])->name('account.logout');
     });
 });
