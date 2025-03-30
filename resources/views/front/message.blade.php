@@ -11,3 +11,10 @@
         {{-- <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button> --}}
     </div>
 @endif
+
+@if (Session::has('warning'))
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ Session::get('warning') }}
+        {{-- <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button> --}}
+    </div>
+@endif
